@@ -140,6 +140,7 @@ Pipeline type skills provide production guidance for specific video formats, ind
 | 3D World Generation | `creative/3d-world-generation.md` | Continuous Three.js terrain worlds with semantic regions, explicit blockout/production tiers, licensed GLTF/PBR assets, diagnostics, and deterministic camera paths |
 | Character Animation Pipeline | `pipelines/character-animation/` | Rigged local cartoon characters, pose libraries, action timelines, SVG/Canvas/Remotion/HyperFrames rendering |
 | Cinematic | `creative/cinematic.md` | Letterbox, film pacing, layered audio, color grading |
+| Psikologi Channel | `creative/psikologi-channel.md` | Channel psikologi berbahasa Indonesia — sourcing, safety, Piper id_ID narration, long-form chaptering |
 
 ## Pipeline Stage Director Skills
 

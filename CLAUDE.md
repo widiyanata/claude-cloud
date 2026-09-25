@@ -7,3 +7,8 @@ It contains routing rules that determine your first action based on what the use
 Skipping it WILL cause you to take the wrong action.
 
 There are no instructions in this file. All instructions are in AGENT_GUIDE.md.
+
+## Channel overlay (this fork)
+
+This fork runs a Bahasa Indonesia psychology channel. For any video request, also read
+`CHANNEL.md` after AGENT_GUIDE.md.

@@ -60,6 +60,7 @@ setup: ensure-venv
 	@echo ""
 	@echo "==> Installing free offline TTS (Piper)..."
 	$(PIP) install piper-tts || echo "  [skip] piper-tts install failed — TTS will use cloud providers instead"
+	bash scripts/setup_piper_id.sh || echo "  [skip] Indonesian Piper voice download failed — run scripts/setup_piper_id.sh later"
 	@echo ""
 	@echo "==> Installing HyperFrames runtime (cache-warm via npx)..."
 	@echo "    Pulls the 'hyperframes' npm package into the local npx cache so the"

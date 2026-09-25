@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 import shutil
 import subprocess
 import time
@@ -20,6 +21,28 @@ from tools.base_tool import (
     ToolStatus,
     ToolTier,
 )
+
+
+_DEFAULT_MODEL = "en_US-lessac-medium"
+_MODEL_DIRS = (
+    Path(__file__).resolve().parents[2] / "models" / "piper",
+    Path.home() / ".piper" / "models",
+)
+
+
+def _default_model() -> str:
+    return os.environ.get("PIPER_MODEL") or _DEFAULT_MODEL
+
+
+def _resolve_model(model: str) -> str:
+    """Resolve a bare voice name (e.g. id_ID-news_tts-medium) to a local .onnx path."""
+    if Path(model).suffix == ".onnx" or Path(model).exists():
+        return model
+    for d in _MODEL_DIRS:
+        candidate = d / f"{model}.onnx"
+        if candidate.exists():
+            return str(candidate)
+    return model
 
 
 class PiperTTS(BaseTool):
@@ -69,7 +92,8 @@ class PiperTTS(BaseTool):
             "text": {"type": "string"},
             "model": {
                 "type": "string",
-                "default": "en_US-lessac-medium",
+                "default": _DEFAULT_MODEL,
+                "description": "Voice name or .onnx path. Defaults to $PIPER_MODEL; bare names are looked up in models/piper/ and ~/.piper/models/.",
             },
             "speaker_id": {
                 "type": "integer",
@@ -119,11 +143,12 @@ class PiperTTS(BaseTool):
     def _generate(self, inputs: dict[str, Any]) -> ToolResult:
         output_path = Path(inputs.get("output_path", "tts_output.wav"))
         output_path.parent.mkdir(parents=True, exist_ok=True)
+        model = inputs.get("model") or _default_model()
 
         proc = subprocess.run(
             [
                 "piper",
-                "--model", inputs.get("model", "en_US-lessac-medium"),
+                "--model", _resolve_model(model),
                 "--speaker", str(inputs.get("speaker_id", 0)),
                 "--length-scale", str(inputs.get("length_scale", 1.0)),
                 "--sentence-silence", str(inputs.get("sentence_silence", 0.3)),
@@ -144,12 +169,12 @@ class PiperTTS(BaseTool):
             success=True,
             data={
                 "provider": self.provider,
-                "model": inputs.get("model", "en_US-lessac-medium"),
+                "model": model,
                 "speaker_id": inputs.get("speaker_id", 0),
                 "text_length": len(inputs["text"]),
                 "output": str(output_path),
                 "format": "wav",
             },
             artifacts=[str(output_path)],
-            model=inputs.get("model", "en_US-lessac-medium"),
+            model=model,
         )

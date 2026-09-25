@@ -103,6 +103,22 @@ export const THEMES: Record<string, ThemeConfig> = {
     captionHighlightColor: "#FFB347",
     captionBackgroundColor: "rgba(10, 10, 26, 0.8)",
   },
+  "psikologi-hangat": {
+    primaryColor: "#2F4858",
+    accentColor: "#F6AE2D",
+    backgroundColor: "#FBF6EE",
+    surfaceColor: "#FFFFFF",
+    textColor: "#1F2A33",
+    mutedTextColor: "#5E6B75",
+    headingFont: "Plus Jakarta Sans",
+    bodyFont: "Plus Jakarta Sans",
+    monoFont: "JetBrains Mono",
+    chartColors: ["#33658A", "#F6AE2D", "#F26419", "#2F4858", "#86BBD8", "#758E4F"],
+    springConfig: { damping: 14, stiffness: 100, mass: 1 },
+    transitionDuration: 0.4,
+    captionHighlightColor: "#F26419",
+    captionBackgroundColor: "rgba(251, 246, 238, 0.9)",
+  },
 };
 
 // Default theme when none is specified — uses the existing dark style for backwards compatibility

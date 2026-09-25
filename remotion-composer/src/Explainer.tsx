@@ -10,6 +10,7 @@ import {
   useVideoConfig,
 } from "remotion";
 import { loadFont } from "@remotion/google-fonts/SpaceGrotesk";
+import { loadFont as loadPlusJakartaSans } from "@remotion/google-fonts/PlusJakartaSans";
 import { TextCard } from "./components/TextCard";
 import { StatCard } from "./components/StatCard";
 import { CalloutBox } from "./components/CalloutBox";
@@ -37,6 +38,12 @@ import { resolveTheme, type ThemeConfig, DEFAULT_THEME } from "./Root";
 // Load Space Grotesk font for cinematic typography
 const { fontFamily } = loadFont("normal", {
   weights: ["400", "700"],
+  subsets: ["latin"],
+});
+
+// Plus Jakarta Sans backs the "psikologi-hangat" theme
+loadPlusJakartaSans("normal", {
+  weights: ["500", "700", "800"],
   subsets: ["latin"],
 });
 
