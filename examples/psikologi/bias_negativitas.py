@@ -26,7 +26,7 @@ GAP = 0.45  # jeda antar adegan (detik)
 
 SCENES = [
     {
-        "cut": {"type": "hero_title", "text": "Satu komentar buruk,\nseratus pujian",
+        "cut": {"type": "hero_title", "text": "Satu komentar buruk, seratus pujian",
                 "subtitle": "Kenapa yang buruk lebih menempel?"},
         "say": "Kamu dapat seratus komentar baik, lalu satu komentar pedas. "
                "Dan yang terus terpikir sampai malam, justru yang satu itu. Kenapa begitu?",
@@ -68,7 +68,7 @@ SCENES = [
                "apakah satu komentar ini benar-benar mewakili semuanya?",
     },
     {
-        "cut": {"type": "hero_title", "text": "Kamu yang memilih\nfokusmu",
+        "cut": {"type": "hero_title", "text": "Kamu yang memilih fokusmu",
                 "subtitle": "Sumber: Baumeister dkk. (2001); Rozin & Royzman (2001)"},
         "say": "Otakmu sedang berusaha melindungimu. "
                "Tapi kamu tetap yang memilih, mau menaruh perhatian di mana.",
