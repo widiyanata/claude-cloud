@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Walaja 633 M · Prototipe Visual</title>
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <canvas id="stage"></canvas>
+    <div id="labels"></div>
+
+    <header class="title">
+      <h1>Pertempuran Walaja</h1>
+      <p>633 M · prototipe visual</p>
+    </header>
+
+    <aside class="legend">
+      <span><i class="dot blue"></i>Kekhalifahan Rasyidin</span>
+      <span><i class="dot red"></i>Kekaisaran Sassanid</span>
+    </aside>
+
+    <div id="signal">Sinyal terompet: kavaleri menyerbu</div>
+
+    <section class="panel">
+      <div class="phase">
+        <strong id="phase-name"></strong>
+        <span id="phase-text"></span>
+      </div>
+      <div class="timeline" id="timeline">
+        <div class="seg" data-i="0"></div>
+        <div class="seg" data-i="1"></div>
+        <div class="seg" data-i="2"></div>
+        <div class="seg" data-i="3"></div>
+        <div class="head" id="playhead"></div>
+      </div>
+      <div class="row">
+        <button id="btn-play" class="primary">Putar pratinjau</button>
+        <button id="btn-reset">Ulang</button>
+        <label><input type="checkbox" id="chk-labels" checked /> Label</label>
+        <label><input type="checkbox" id="chk-tilt" checked /> Tilt-shift</label>
+        <span class="hint">Seret: geser · Klik kanan / Q E: putar · Roda: zoom</span>
+      </div>
+    </section>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

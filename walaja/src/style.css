@@ -1,0 +1,256 @@
+:root {
+  --paper: #f1e3c2;
+  --ink: #3b2a17;
+  --gold: #c8962e;
+  --blue: #2f6fb5;
+  --red: #b23a34;
+  --panel: rgba(247, 237, 212, 0.86);
+  --edge: rgba(59, 42, 23, 0.22);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+#stage {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  touch-action: none;
+}
+
+.title,
+.legend,
+.panel {
+  position: fixed;
+  z-index: 2;
+  background: var(--panel);
+  border: 1px solid var(--edge);
+  border-radius: 12px;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 6px 20px rgba(80, 55, 20, 0.18);
+}
+
+.title {
+  top: 16px;
+  left: 16px;
+  padding: 10px 16px;
+}
+
+.title h1 {
+  margin: 0;
+  font-family: Georgia, 'Iowan Old Style', serif;
+  font-size: 20px;
+  letter-spacing: 0.02em;
+}
+
+.title p {
+  margin: 2px 0 0;
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.legend {
+  top: 16px;
+  right: 16px;
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12px;
+}
+
+.dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+.dot.blue {
+  background: var(--blue);
+}
+.dot.red {
+  background: var(--red);
+}
+
+.panel {
+  left: 16px;
+  bottom: 16px;
+  width: min(560px, calc(100vw - 32px));
+  padding: 10px 14px 10px;
+}
+
+.phase {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-height: 46px;
+}
+.phase strong {
+  font-family: Georgia, serif;
+  font-size: 15px;
+}
+.phase span {
+  font-size: 12.5px;
+  line-height: 1.4;
+  opacity: 0.85;
+}
+
+.timeline {
+  position: relative;
+  display: flex;
+  gap: 3px;
+  height: 10px;
+  margin: 8px 0 10px;
+  cursor: pointer;
+}
+.timeline .seg {
+  height: 100%;
+  border-radius: 3px;
+  background: rgba(59, 42, 23, 0.16);
+  overflow: hidden;
+  position: relative;
+}
+.timeline .seg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  width: var(--fill, 0%);
+  background: var(--gold);
+}
+.timeline .head {
+  position: absolute;
+  top: -3px;
+  width: 3px;
+  height: 16px;
+  margin-left: -1px;
+  border-radius: 2px;
+  background: var(--ink);
+  pointer-events: none;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.row label {
+  font-size: 12.5px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  user-select: none;
+}
+
+button {
+  font: inherit;
+  font-size: 13px;
+  padding: 7px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--edge);
+  background: #fbf3dd;
+  color: var(--ink);
+  cursor: pointer;
+}
+button:hover {
+  background: #fff8e6;
+}
+button.primary {
+  background: var(--ink);
+  color: #f7edd4;
+  border-color: var(--ink);
+}
+button.primary:hover {
+  background: #54401f;
+}
+button:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+.hint {
+  margin-left: auto;
+  font-size: 11px;
+  opacity: 0.6;
+}
+
+#labels {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+}
+.tag {
+  position: absolute;
+  transform: translate(-50%, -100%);
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  color: #fff;
+  border-radius: 999px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  transition: opacity 0.4s;
+}
+.tag.blue {
+  background: var(--blue);
+}
+.tag.red {
+  background: var(--red);
+}
+.tag.hide {
+  opacity: 0;
+}
+
+@media (max-width: 560px) {
+  .legend {
+    display: none;
+  }
+  .hint {
+    display: none;
+  }
+}
+@media (max-width: 720px) {
+  .hint {
+    display: none;
+  }
+}
+
+#signal {
+  position: fixed;
+  z-index: 3;
+  top: 84px;
+  left: 50%;
+  transform: translate(-50%, -8px);
+  padding: 8px 18px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: #f7edd4;
+  font-family: Georgia, serif;
+  font-size: 15px;
+  letter-spacing: 0.02em;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s, transform 0.35s;
+}
+#signal.on {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
