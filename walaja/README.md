@@ -2,6 +2,8 @@
 
 Prototipe visual simulasi taktis berbasis **Three.js** dengan kamera orthographic (nuansa isometrik) dan gaya **low-poly diorama + tilt-shift**. Skenario: *double envelopment* Khalid bin Walid melawan pasukan Sassanid.
 
+Dokumentasi lengkap (keputusan desain, arsitektur, verifikasi, batasan): [DOKUMENTASI.md](./DOKUMENTASI.md).
+
 > Status: **visual saja**. Pratinjau empat fase berjalan sebagai koreografi terskrip; belum ada pertempuran, moral, korban, maupun AI.
 
 ## Menjalankan
