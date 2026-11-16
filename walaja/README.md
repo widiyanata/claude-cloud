@@ -4,7 +4,7 @@ Aplikasi pembuat video simulasi perang berbasis **Three.js** dengan kamera ortho
 
 Dokumentasi lengkap (keputusan desain, arsitektur, verifikasi, batasan): [DOKUMENTASI.md](./DOKUMENTASI.md).
 
-> Status: pratinjau empat fase terskrip dan **ekspor video MP4** (16:9 dan 9:16, 1080p/4K) sudah berjalan. Sistem kamera sinematik, panah taktis, dan animasi korban belum ada.
+> Status: pratinjau empat fase terskrip dan **ekspor video MP4** (16:9 dan 9:16, 1080p/4K) sudah berjalan. Kamera sinematik (shot terskrip dengan transisi dan guncangan) juga sudah ada. Panah taktis dan animasi korban belum.
 
 ## Menjalankan
 
@@ -30,7 +30,7 @@ Kotak centang **Label** dan **Tilt-shift** membantu membandingkan tampilan denga
 ## Membuat video
 
 1. Pilih format: **16:9 · YouTube** atau **9:16 · Shorts/TikTok**. Area di luar bingkai rekaman digelapkan; kamera otomatis menyesuaikan sudut dan zoom (9:16 memutar garis pertempuran menjadi tegak).
-2. Atur kamera bila perlu (geser, putar, zoom). Yang terlihat di dalam bingkai adalah yang terekam.
+2. **Kamera sinematik** (aktif secara bawaan) menggerakkan kamera menurut daftar shot di `src/timeline.js`. Matikan centangnya untuk mengatur kamera sendiri (geser, putar, zoom). Yang terlihat di dalam bingkai adalah yang terekam.
 3. Pilih resolusi (1080p/4K), fps (30/60), dan kecepatan (1× ±46 dtk, 0,5× ±90 dtk).
 4. Klik **Ekspor video**. Video dirender frame demi frame, lalu otomatis diunduh sebagai MP4 (H.264). Jika browser tidak bisa meng-encode H.264, hasilnya WebM (VP9/VP8).
 
@@ -51,19 +51,19 @@ Gunakan **Chrome atau Edge** versi terbaru (memerlukan WebCodecs). Hasil render 
 | Berkas | Fungsi |
 |---|---|
 | `src/main.js` | Renderer, kamera dan format, loop, HUD, emisi debu, alur ekspor |
+| `src/camera.js` | Evaluasi kamera sinematik: transisi antar-shot, mengikuti unit, guncangan |
 | `src/overlay.js` | Teks di dalam video: judul, narasi, label, cue sinyal |
 | `src/export.js` | Encode WebCodecs → MP4 (H.264) atau WebM |
 | `src/terrain.js` | Fungsi tinggi medan, bukit, tekstur tanah dan jejak |
 | `src/models.js` | Geometri prajurit dan kuda (prosedural) |
 | `src/army.js` | `Regiment`, formasi, jalur gerak, susunan pasukan |
-| `src/timeline.js` | Fase, waktu skenario, teks judul dan penutup |
+| `src/timeline.js` | Fase, waktu skenario, teks judul dan penutup, daftar shot kamera |
 | `src/banners.js` | Panji dan tekstur kanvas |
 | `src/dust.js` | Sistem partikel debu |
 | `src/post.js` | Tilt-shift, vignette, saturasi |
 
 ## Langkah berikutnya
 
-1. Sistem kamera sinematik: shot per waktu (pembukaan lebar, close-up Khalid, mengikuti serbuan, tampilan peta), transisi halus, guncangan saat benturan.
-2. Grafis penjelas: panah pergerakan pasukan, jumlah pasukan, peta taktis.
-3. Pertempuran yang terlihat hidup: benturan, prajurit tumbang, formasi pecah, pasukan Sassanid melarikan diri.
-4. Skenario sebagai data, agar pertempuran lain bisa dibuat tanpa mengubah kode.
+1. Grafis penjelas: panah pergerakan pasukan, jumlah pasukan, peta taktis.
+2. Pertempuran yang terlihat hidup: benturan, prajurit tumbang, formasi pecah, pasukan Sassanid melarikan diri.
+3. Skenario sebagai data, agar pertempuran lain bisa dibuat tanpa mengubah kode.

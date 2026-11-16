@@ -45,6 +45,32 @@ export const PHASES = [
   },
 ];
 
+// Kamera sinematik. Tiap key: kamera tiba di keadaan ini pada waktu t; di antara key ada transisi halus.
+// at: titik fokus [x, z] atau follow: nama titik fokus yang bergerak (army.focus).
+// yaw: sudut kamera (derajat). width: lebar pandang dalam satuan dunia untuk 16:9.
+// Untuk 9:16 otomatis yaw +47° (garis pertempuran tegak) dan width ×0,6, kecuali diganti lewat v.
+export const CAMERA = [
+  { t: 0, at: [-13, 31], yaw: 24, width: 270, v: { at: [0, -2], width: 165 } }, // pembukaan lebar
+  { t: 5, at: [-10, 24], yaw: 30, width: 220, v: { at: [0, -2], width: 140 } },
+  { t: 8.5, at: [0, -18], yaw: 36, width: 120 }, // massa Sassanid
+  { t: 11.5, at: [0, 8], yaw: 30, width: 92 }, // benturan
+  { t: 14.5, follow: 'khalid', yaw: 22, width: 52 }, // Khalid memimpin mundur perlahan
+  { t: 19.5, follow: 'khalid', yaw: 16, width: 60 },
+  { t: 23.5, at: [0, 6], yaw: 28, width: 150, v: { width: 100 } }, // garis membentuk U
+  { t: 26.2, at: [88, 58], yaw: 32, width: 68 }, // kavaleri di balik bukit
+  { t: 27.6, at: [88, 58], yaw: 32, width: 74 },
+  { t: 31, follow: 'cavR', yaw: 40, width: 95 }, // mengikuti serbuan
+  { t: 34, follow: 'cavR', yaw: 44, width: 115 },
+  { t: 37.5, at: [0, -8], yaw: 32, width: 175, v: { width: 125 } }, // kantong tertutup
+  { t: 44, at: [4, -12], yaw: 26, width: 210, v: { width: 145 } },
+];
+
+// Guncangan kamera saat benturan: amplitudo relatif terhadap lebar pandang.
+export const SHAKES = [
+  { t: T_CONTACT, amp: 0.5, dur: 1.2 },
+  { t: 35, amp: 0.9, dur: 1.6 },
+];
+
 export function phaseAt(t) {
   for (let i = PHASES.length - 1; i >= 0; i--) if (t >= PHASES[i].from) return PHASES[i];
   return PHASES[0];

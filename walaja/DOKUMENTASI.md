@@ -4,7 +4,7 @@ Ringkasan pekerjaan, keputusan desain, cara kerja, hasil verifikasi, dan batasan
 
 - **PR:** [#1](https://github.com/widiyanata/claude-cloud/pull/1) prototipe visual, [#2](https://github.com/widiyanata/claude-cloud/pull/2) dokumentasi
 - **Branch:** `claude/pensive-davinci-j6yd8m`
-- **Status:** prototipe visual dan ekspor video (bagian 9) selesai. Arah proyek: alat pembuat video simulasi perang, bukan game.
+- **Status:** prototipe visual, ekspor video (bagian 9), dan kamera sinematik (bagian 10) selesai. Arah proyek: alat pembuat video simulasi perang, bukan game.
 
 ## 1. Tujuan
 
@@ -109,11 +109,10 @@ Masalah yang ditemukan lewat screenshot dan sudah diperbaiki:
 
 Diperbarui setelah arah proyek menjadi alat pembuat video (lihat bagian 9):
 
-1. Sistem kamera sinematik: shot per waktu, transisi halus, guncangan saat benturan.
-2. Grafis penjelas: panah pergerakan, jumlah pasukan, peta taktis.
-3. Pertempuran yang terlihat hidup: benturan, prajurit tumbang, formasi pecah, pasukan melarikan diri.
-4. Skenario sebagai data untuk pertempuran lain.
-5. Ukur waktu render di perangkat nyata.
+1. Grafis penjelas: panah pergerakan, jumlah pasukan, peta taktis.
+2. Pertempuran yang terlihat hidup: benturan, prajurit tumbang, formasi pecah, pasukan melarikan diri.
+3. Skenario sebagai data untuk pertempuran lain.
+4. Ukur waktu render di perangkat nyata.
 
 ## 9. Tahap 2 · Ekspor video
 
@@ -170,4 +169,32 @@ Bug yang ditemukan dan diperbaiki selama pengujian:
 - **Memori:** seluruh video ditampung di RAM sebelum diunduh. 4K60 pada 0,5× (±90 dtk) bisa mencapai ±700 MB.
 - **Waktu render** bergantung pada GPU dan belum diukur di perangkat nyata.
 - **Ukuran partikel debu** di 4K bisa melampaui batas `gl_PointSize` pada sebagian GPU, sehingga debu tampak lebih kecil.
-- Fase 1 hingga 4 masih memakai satu sudut kamera per format; shot sinematik adalah tahap berikutnya.
+
+## 10. Tahap 3 · Kamera sinematik
+
+Kamera kini bergerak menurut **daftar shot** (`CAMERA` di `src/timeline.js`), aktif secara bawaan lewat centang **Kamera sinematik**. Jika dimatikan, kamera kembali manual seperti tahap 2.
+
+### Cara kerja
+
+- Tiap key berisi waktu `t`, titik fokus (`at: [x, z]` tetap, atau `follow: 'khalid' | 'cavL' | 'cavR' | 'persC'` yang mengikuti unit), `yaw` dalam derajat, dan `width`, yaitu lebar pandang dalam satuan dunia. Di antara dua key ada transisi halus (smoothstep).
+- Lebar pandang dipetakan ke lebar bingkai video, sehingga framing sama di pratinjau dan ekspor pada resolusi berapa pun.
+- Untuk 9:16, yaw otomatis +47° dan lebar ×0,6, kecuali diganti lewat `v: { at, yaw, width }`.
+- **Guncangan** (`SHAKES`): saat kontak infanteri (`t = 12`) dan saat kavaleri menghantam (`t = 35`). Dibuat dari jumlah sinus, sehingga tetap deterministik.
+- Kamera adalah fungsi waktu dan posisi unit, sehingga seek, pratinjau, dan ekspor selalu sama.
+
+### Urutan shot Walaja
+
+| Waktu | Shot |
+|---|---|
+| 0–5 | Pembukaan lebar, perlahan mendekat (kartu judul) |
+| 5–8,5 | Menyorot massa infanteri Sassanid |
+| 8,5–11,5 | Garis benturan; guncangan saat kontak |
+| 11,5–19,5 | Close-up Khalid memimpin mundur perlahan, kamera berputar pelan |
+| 19,5–23,5 | Menjauh untuk memperlihatkan garis "U" |
+| 23,5–27,6 | Kavaleri kanan menunggu di balik bukit; sinyal |
+| 27,6–34 | Mengikuti serbuan kavaleri; guncangan saat menghantam |
+| 34–44 | Kantong tertutup, lalu kamera menjauh (kartu penutup) |
+
+### Verifikasi
+
+Ekspor 640×360 dan 360×640 (4 fps, 2×, 96 frame) berupa MP4 H.264 valid. Frame pada sembilan momen kunci diperiksa secara visual di kedua format: subjek tiap shot berada dalam bingkai. Tidak ada error konsol.

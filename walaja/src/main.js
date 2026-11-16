@@ -6,6 +6,7 @@ import { DustSystem } from './dust.js';
 import { createPost } from './post.js';
 import { drawOverlay } from './overlay.js';
 import { encodeVideo } from './export.js';
+import { cameraShot } from './camera.js';
 import { mulberry32 } from './noise.js';
 import { END, PHASES, phaseAt, T_CONTACT, T_SIGNAL } from './timeline.js';
 
@@ -139,6 +140,39 @@ function fitZoom() {
   const want = VIEWS[format].width;
   camera.zoom = want ? THREE.MathUtils.clamp(worldW / want, controls.minZoom, 1) : 1;
   camera.updateProjectionMatrix();
+}
+
+// ── Kamera sinematik ──────────────────────────────────────────────────────────
+let cinematic = true;
+
+// Menempatkan kamera menurut daftar shot. rect adalah bingkai video di dalam area render
+// (vw × vh); lebar pandang shot dipetakan ke lebar bingkai itu.
+function placeCinematic(time, vw, vh, rect) {
+  const s = cameraShot(time, format === '9:16', army.focus);
+  camera.position.set(
+    s.x + DIST * Math.sin(POLAR) * Math.sin(s.yaw),
+    DIST * Math.cos(POLAR),
+    s.z + DIST * Math.sin(POLAR) * Math.cos(s.yaw),
+  );
+  camera.lookAt(s.x, 0, s.z);
+  controls.target.set(s.x, 0, s.z);
+  const fullW = s.width * (vw / rect.w);
+  const fullH = fullW * (vh / vw);
+  camera.left = -fullW / 2;
+  camera.right = fullW / 2;
+  camera.top = fullH / 2;
+  camera.bottom = -fullH / 2;
+  camera.zoom = 1;
+  camera.updateProjectionMatrix();
+}
+
+function setCinematic(on) {
+  cinematic = on;
+  controls.enabled = !on;
+  if (!on) {
+    resize();
+    applyFormatView();
+  }
 }
 
 // ── Label unit (digambar di overlay, ikut terekam) ────────────────────────────
@@ -293,6 +327,7 @@ $('btn-reset').addEventListener('click', () => {
 });
 $('chk-labels').addEventListener('change', (e) => (showLabels = e.target.checked));
 $('chk-tilt').addEventListener('change', (e) => post.setTiltShift(e.target.checked));
+$('chk-cine').addEventListener('change', (e) => setCinematic(e.target.checked));
 timeline.addEventListener('click', (e) => {
   const r = timeline.getBoundingClientRect();
   seek(((e.clientX - r.left) / r.width) * END);
@@ -383,14 +418,17 @@ function frame(ms) {
     syncHud();
   }
 
-  if (keys.has('q')) rotateCamera(1.3 * dt);
-  if (keys.has('e')) rotateCamera(-1.3 * dt);
-
   stepWorld(dt, playing);
   if (frameNo++ % 6 === 0) trample.flush();
 
-  controls.update();
-  clampTarget();
+  if (cinematic) {
+    placeCinematic(t, window.innerWidth, window.innerHeight, frameRect(window.innerWidth, window.innerHeight));
+  } else {
+    if (keys.has('q')) rotateCamera(1.3 * dt);
+    if (keys.has('e')) rotateCamera(-1.3 * dt);
+    controls.update();
+    clampTarget();
+  }
   post.composer.render();
   drawPreviewOverlay();
 }
@@ -423,18 +461,22 @@ async function exportVideo(opts = {}) {
   status.textContent = 'Menyiapkan…';
   abort = new AbortController();
 
-  // Kamera ekspor = bagian bingkai pratinjau, dengan skala dunia yang sama.
-  const vw = window.innerWidth;
-  const vh = window.innerHeight;
-  const r = frameRect(vw, vh);
-  const saved = { l: camera.left, r: camera.right, t: camera.top, b: camera.bottom };
-  const fw = saved.r - saved.l;
-  const fh = saved.t - saved.b;
-  camera.left = saved.l + (r.x / vw) * fw;
-  camera.right = saved.l + ((r.x + r.w) / vw) * fw;
-  camera.top = saved.t - (r.y / vh) * fh;
-  camera.bottom = saved.t - ((r.y + r.h) / vh) * fh;
-  camera.updateProjectionMatrix();
+  // Kamera manual: kamera ekspor = bagian bingkai pratinjau, dengan skala dunia yang sama.
+  // Kamera sinematik: ditempatkan ulang tiap frame menurut daftar shot.
+  if (!cinematic) {
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const r = frameRect(vw, vh);
+    const fw = camera.right - camera.left;
+    const fh = camera.top - camera.bottom;
+    const l0 = camera.left;
+    const t0 = camera.top;
+    camera.left = l0 + (r.x / vw) * fw;
+    camera.right = l0 + ((r.x + r.w) / vw) * fw;
+    camera.top = t0 - (r.y / vh) * fh;
+    camera.bottom = t0 - ((r.y + r.h) / vh) * fh;
+    camera.updateProjectionMatrix();
+  }
   renderer.setPixelRatio(1);
   renderer.setSize(W, H, false);
   post.resize(W, H);
@@ -463,6 +505,7 @@ async function exportVideo(opts = {}) {
       renderFrame: (i) => {
         t = Math.min(END, i * simDt);
         stepWorld(simDt, t < END);
+        if (cinematic) placeCinematic(t, W, H, full);
         trample.flush();
         post.composer.render();
         cctx.drawImage(renderer.domElement, 0, 0, W, H);
@@ -480,11 +523,10 @@ async function exportVideo(opts = {}) {
     error = e;
   }
 
-  // Kembalikan tampilan interaktif.
-  Object.assign(camera, { left: saved.l, right: saved.r, top: saved.t, bottom: saved.b });
+  // Kembalikan tampilan interaktif (resize() memulihkan frustum kamera manual).
   renderer.setPixelRatio(DPR);
   resize();
-  controls.enabled = true;
+  controls.enabled = !cinematic;
   exporting = false;
   seek(0);
 
@@ -509,6 +551,7 @@ async function exportVideo(opts = {}) {
 
 $('btn-export').addEventListener('click', () => exportVideo());
 
+setCinematic(true);
 syncHud();
 syncButton();
 requestAnimationFrame(frame);
@@ -517,6 +560,10 @@ requestAnimationFrame(frame);
 window.walaja = {
   seek,
   exportVideo,
+  setCinematic: (on) => {
+    $('chk-cine').checked = on;
+    setCinematic(on);
+  },
   setFormat: (f) => {
     format = f;
     $('sel-format').value = f;

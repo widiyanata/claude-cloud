@@ -322,5 +322,13 @@ export function buildArmies(scene) {
     { text: 'Kavaleri ringan · tersembunyi', side: 'blue', phase: 'hidden', get: () => cavL.anchor(0, 0, 6.8) },
   );
 
-  return { regiments, banners, labels, meshes, cavalry: [cavL, cavR], infantry: { muslimInf, persC, persL, persR }, catL, catR };
+  // Titik fokus yang bisa diikuti kamera sinematik (lihat CAMERA di timeline.js).
+  const focus = {
+    khalid: () => muslimInf.place(0, frontLz + 2.6),
+    cavL: () => ({ x: cavL.state.x, z: cavL.state.z }),
+    cavR: () => ({ x: cavR.state.x, z: cavR.state.z }),
+    persC: () => ({ x: persC.state.x, z: persC.state.z }),
+  };
+
+  return { regiments, banners, labels, meshes, focus, cavalry: [cavL, cavR], infantry: { muslimInf, persC, persL, persR }, catL, catR };
 }
