@@ -1,10 +1,10 @@
-# Pertempuran Walaja (633 M) · Prototipe Visual
+# Pertempuran Walaja (633 M) · Simulasi untuk Video
 
-Prototipe visual simulasi taktis berbasis **Three.js** dengan kamera orthographic (nuansa isometrik) dan gaya **low-poly diorama + tilt-shift**. Skenario: *double envelopment* Khalid bin Walid melawan pasukan Sassanid.
+Aplikasi pembuat video simulasi perang berbasis **Three.js** dengan kamera orthographic (nuansa isometrik) dan gaya **low-poly diorama + tilt-shift**. Skenario: *double envelopment* Khalid bin Walid melawan pasukan Sassanid.
 
 Dokumentasi lengkap (keputusan desain, arsitektur, verifikasi, batasan): [DOKUMENTASI.md](./DOKUMENTASI.md).
 
-> Status: **visual saja**. Pratinjau empat fase berjalan sebagai koreografi terskrip; belum ada pertempuran, moral, korban, maupun AI.
+> Status: pratinjau empat fase terskrip dan **ekspor video MP4** (16:9 dan 9:16, 1080p/4K) sudah berjalan. Kamera sinematik (shot terskrip dengan transisi dan guncangan) juga sudah ada. Panah taktis dan animasi korban belum.
 
 ## Menjalankan
 
@@ -23,10 +23,22 @@ npm run build    # hasil build ke dist/
 | Putar | Klik kanan + seret, atau `Q` / `E` |
 | Zoom | Roda mouse / cubit |
 | Pratinjau | Tombol **Putar pratinjau**; klik bilah waktu untuk lompat |
+| Sembunyikan UI | Tombol **Sembunyikan UI** atau `H` |
 
 Kotak centang **Label** dan **Tilt-shift** membantu membandingkan tampilan dengan dan tanpa efek miniatur.
 
-## Isi prototipe
+## Membuat video
+
+1. Pilih format: **16:9 · YouTube** atau **9:16 · Shorts/TikTok**. Area di luar bingkai rekaman digelapkan; kamera otomatis menyesuaikan sudut dan zoom (9:16 memutar garis pertempuran menjadi tegak).
+2. **Kamera sinematik** (aktif secara bawaan) menggerakkan kamera menurut daftar shot di `src/timeline.js`. Matikan centangnya untuk mengatur kamera sendiri (geser, putar, zoom). Yang terlihat di dalam bingkai adalah yang terekam.
+3. Pilih resolusi (1080p/4K), fps (30/60), dan kecepatan (1× ±46 dtk, 0,5× ±90 dtk).
+4. Klik **Ekspor video**. Video dirender frame demi frame, lalu otomatis diunduh sebagai MP4 (H.264). Jika browser tidak bisa meng-encode H.264, hasilnya WebM (VP9/VP8).
+
+Teks di dalam video (kartu judul, narasi tiap fase, label unit, cue sinyal, kartu penutup) dibuat oleh aplikasi; centang **Label** menentukan apakah label unit ikut terekam. Audio (narasi, musik, efek) ditambahkan di editor video.
+
+Gunakan **Chrome atau Edge** versi terbaru (memerlukan WebCodecs). Hasil render selalu sama untuk pengaturan yang sama.
+
+## Isi aplikasi
 
 - Medan prosedural berfaset (dataran Mesopotamia), dua punggung bukit tempat kavaleri bersembunyi, batu dan semak, penampang tanah ala diorama.
 - ±1.200 prajurit lewat `InstancedMesh` (infanteri Sassanid dan Muslim, kataprak, kavaleri ringan, komandan).
@@ -38,18 +50,20 @@ Kotak centang **Label** dan **Tilt-shift** membantu membandingkan tampilan denga
 
 | Berkas | Fungsi |
 |---|---|
-| `src/main.js` | Renderer, kamera, loop, HUD, emisi debu |
+| `src/main.js` | Renderer, kamera dan format, loop, HUD, emisi debu, alur ekspor |
+| `src/camera.js` | Evaluasi kamera sinematik: transisi antar-shot, mengikuti unit, guncangan |
+| `src/overlay.js` | Teks di dalam video: judul, narasi, label, cue sinyal |
+| `src/export.js` | Encode WebCodecs → MP4 (H.264) atau WebM |
 | `src/terrain.js` | Fungsi tinggi medan, bukit, tekstur tanah dan jejak |
 | `src/models.js` | Geometri prajurit dan kuda (prosedural) |
 | `src/army.js` | `Regiment`, formasi, jalur gerak, susunan pasukan |
-| `src/timeline.js` | Fase dan waktu skenario |
+| `src/timeline.js` | Fase, waktu skenario, teks judul dan penutup, daftar shot kamera |
 | `src/banners.js` | Panji dan tekstur kanvas |
 | `src/dust.js` | Sistem partikel debu |
 | `src/post.js` | Tilt-shift, vignette, saturasi |
 
 ## Langkah berikutnya
 
-1. Resolusi tempur tingkat resimen (kekuatan, moral, bonus serangan dari sisi/belakang).
-2. AI Sassanid (dorong maju, merapat ke tengah) dan komando pemain (bertahan, mundur, sinyal).
-3. Fog of war dan minimap.
-4. Audio (benturan, genderang, tapak kuda) dan skor.
+1. Grafis penjelas: panah pergerakan pasukan, jumlah pasukan, peta taktis.
+2. Pertempuran yang terlihat hidup: benturan, prajurit tumbang, formasi pecah, pasukan Sassanid melarikan diri.
+3. Skenario sebagai data, agar pertempuran lain bisa dibuat tanpa mengubah kode.

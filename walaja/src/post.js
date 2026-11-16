@@ -61,6 +61,12 @@ export function createPost(renderer, scene, camera) {
 
   const u = tilt.uniforms;
   const defaults = { blur: u.uBlur.value, vig: u.uVig.value };
+  let enabled = true;
+  let scale = 1; // blur dalam px diskalakan dengan resolusi, agar 4K terlihat sama dengan pratinjau
+  const apply = () => {
+    u.uBlur.value = enabled ? defaults.blur * scale : 0;
+    u.uVig.value = enabled ? defaults.vig : 0.1;
+  };
   return {
     composer,
     resize(w, h) {
@@ -68,10 +74,12 @@ export function createPost(renderer, scene, camera) {
       composer.setSize(w, h);
       const s = renderer.getDrawingBufferSize(new THREE.Vector2());
       u.uRes.value.set(s.x, s.y);
+      scale = Math.max(1, Math.min(s.x, s.y) / 1080);
+      apply();
     },
     setTiltShift(on) {
-      u.uBlur.value = on ? defaults.blur : 0;
-      u.uVig.value = on ? defaults.vig : 0.1;
+      enabled = on;
+      apply();
     },
   };
 }

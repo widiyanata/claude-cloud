@@ -1,10 +1,10 @@
-# Dokumentasi Pekerjaan · Prototipe Visual Walaja
+# Dokumentasi Pekerjaan · Simulasi Video Walaja
 
 Ringkasan pekerjaan, keputusan desain, cara kerja, hasil verifikasi, dan batasan prototipe. Untuk cara menjalankan dan kontrol, lihat [README](./README.md).
 
-- **PR:** [widiyanata/claude-cloud#1](https://github.com/widiyanata/claude-cloud/pull/1)
+- **PR:** [#1](https://github.com/widiyanata/claude-cloud/pull/1) prototipe visual, [#2](https://github.com/widiyanata/claude-cloud/pull/2) dokumentasi
 - **Branch:** `claude/pensive-davinci-j6yd8m`
-- **Status:** prototipe visual selesai; mekanik pertempuran belum dibuat.
+- **Status:** prototipe visual, ekspor video (bagian 9), dan kamera sinematik (bagian 10) selesai. Arah proyek: alat pembuat video simulasi perang, bukan game.
 
 ## 1. Tujuan
 
@@ -58,10 +58,10 @@ Mekanisme penting:
 
 | Fase | Waktu (dtk) | Peristiwa |
 |---|---|---|
-| 1 · Formasi awal | 0–2 | Garis Sassanid panjang; garis Muslim tipis melengkung ke luar; kavaleri di balik bukit. |
-| 2 · Benturan pertama | 2–8 | Sassanid maju frontal hingga kontak (`T_CONTACT = 8`). |
-| 3 · Umpan termakan | 8–23 | Muslim mundur dan melengkung ke dalam (U); sayap Sassanid berputar ke dalam. |
-| 4 · Penjepit | 23–40 | Sinyal (`T_SIGNAL = 23`); kavaleri melaju 11 dtk melewati sisi luar lalu menutup di belakang. Muslim menekan maju, Sassanid terdesak. |
+| 1 · Formasi awal | 0–6 | Garis Sassanid panjang; garis Muslim tipis melengkung ke luar; kavaleri di balik bukit. |
+| 2 · Benturan pertama | 6–12 | Sassanid maju frontal hingga kontak (`T_CONTACT = 12`). |
+| 3 · Umpan termakan | 12–27 | Muslim mundur dan melengkung ke dalam (U); sayap Sassanid berputar ke dalam. |
+| 4 · Penjepit | 27–44 | Sinyal (`T_SIGNAL = 27`); kavaleri melaju 11 dtk melewati sisi luar lalu menutup di belakang. Muslim menekan maju, Sassanid terdesak. |
 
 Pasukan (±1.230 figur): infanteri Sassanid 3 × (26 × 12) = 936; infanteri Muslim 44 × 3 + Khalid = 133; kavaleri ringan 2 × 40 = 80; kataprak 2 × 36 = 72; Andarzaghar dan pengawal = 9. Jumlah ini untuk keterbacaan visual, **bukan skala historis**.
 
@@ -71,13 +71,13 @@ Pasukan (±1.230 figur): infanteri Sassanid 3 × (26 × 12) = 936; infanteri Mus
 |---|---|---|
 | Tinggi pandang kamera | `main.js` · `FRUSTUM` | 138 satuan |
 | Yaw awal | `main.js` · `START_YAW` | 28° |
-| Zoom min / maks | `main.js` · `controls` | 0,7 / 6 |
-| Resolusi bayangan | `main.js` · `shadowRes` | 4096 (layar besar), 2048 (kecil) |
+| Zoom min / maks | `main.js` · `controls` | 0,35 / 6 |
+| Resolusi bayangan | `main.js` · `sun.shadow.mapSize` | 4096 |
 | Posisi dan tinggi bukit | `terrain.js` · `RIDGES` | (±84, 52), tinggi 12 |
 | Kekuatan tilt-shift / vignette | `post.js` | blur 2,6 · vignette 0,32 · saturasi 1,1 |
 | Kolam partikel debu | `dust.js` | 7.000 |
 | Durasi serbuan kavaleri | `army.js` · `pathTrack(..., 11)` | 11 dtk |
-| Panjang pratinjau | `timeline.js` · `END` | 40 dtk |
+| Panjang pratinjau | `timeline.js` · `END` | 44 dtk |
 
 ## 6. Verifikasi
 
@@ -107,9 +107,94 @@ Masalah yang ditemukan lewat screenshot dan sudah diperbaiki:
 
 ## 8. Langkah berikutnya
 
-1. Resolusi tempur tingkat resimen: kekuatan, moral, bonus serangan dari sisi dan belakang.
-2. AI Sassanid (dorong maju, merapat ke tengah) dan komando pemain (bertahan, mundur, sinyal).
-3. Fog of war dan minimap, sehingga kavaleri benar-benar tersembunyi.
-4. Audio: benturan, genderang atau terompet sinyal, tapak kuda.
-5. Skor (korban, waktu, jumlah musuh lolos) dan variasi tingkat kesulitan.
-6. Ukur performa di perangkat nyata, lalu tambahkan LOD (blok resimen saat zoom-out).
+Diperbarui setelah arah proyek menjadi alat pembuat video (lihat bagian 9):
+
+1. Grafis penjelas: panah pergerakan, jumlah pasukan, peta taktis.
+2. Pertempuran yang terlihat hidup: benturan, prajurit tumbang, formasi pecah, pasukan melarikan diri.
+3. Skenario sebagai data untuk pertempuran lain.
+4. Ukur waktu render di perangkat nyata.
+
+## 9. Tahap 2 · Ekspor video
+
+Arah proyek ditetapkan sebagai **alat pembuat video**, dengan format 16:9 dan 9:16, gaya miniatur tetap, dan teks dibuat di aplikasi. Mekanik game (AI, komando pemain, skor) tidak lagi direncanakan. Naskah terskrip dipertahankan karena hasilnya bisa diatur dan diulang persis.
+
+### Keputusan
+
+| Keputusan | Pilihan | Alasan |
+|---|---|---|
+| Cara merekam | Render offline frame demi frame + WebCodecs | Mulus pada fps berapa pun, tidak bergantung kecepatan komputer. Rekam layar biasa akan patah-patah. |
+| Wadah dan codec | MP4 H.264 (`mp4-muxer`), cadangan WebM VP9/VP8 (`webm-muxer`) | H.264 diterima semua editor dan platform; cadangan untuk browser tanpa encoder H.264. |
+| Bitrate | ±0,12 bit/piksel/frame (±15 Mbps 1080p60, ±60 Mbps 4K60) | Cukup tinggi agar debu dan pasir tidak pecah setelah dikompres ulang oleh platform. |
+| Determinisme | Angka acak ber-seed, langkah waktu tetap, debu dan jejak di-reset sebelum render | Pengaturan yang sama selalu menghasilkan video yang sama. |
+| Teks | Digambar ke canvas 2D yang sama untuk pratinjau dan ekspor | Yang terlihat di pratinjau = yang terekam (WYSIWYG). |
+| Bingkai format | Area di luar rasio format digelapkan; kamera ekspor = potongan bingkai itu | Pengguna menyusun shot langsung di layar. |
+| Komposisi 9:16 | Kamera diputar +47° (75°), titik tengah dan zoom tersendiri; matahari ikut diputar | Garis pertempuran tegak; kedua bukit masuk bingkai sempit; pencahayaan relatif kamera tetap. |
+| Pacing | Jeda pembuka 4 dtk (naskah 44 dtk) + 2 dtk ekor; opsi kecepatan 0,5× | Kartu judul dan narasi Fase 1 sempat terbaca. |
+
+### Perubahan kode
+
+| Berkas | Perubahan |
+|---|---|
+| `src/export.js` (baru) | Memilih codec yang didukung, encode frame dengan backpressure, membatalkan via `AbortSignal`, mengembalikan Blob. |
+| `src/overlay.js` (baru) | Kartu judul dan penutup, narasi per fase (lower third), label unit, cue sinyal. Ukuran diskalakan dengan sisi terpendek bingkai; area aman 9:16 di bawah ±20%. |
+| `src/main.js` | `stepWorld()` dipakai bersama oleh loop interaktif dan ekspor; RNG ber-seed; format dan bingkai pratinjau; mode sembunyikan UI (`H`); alur ekspor dan modal progres. Label HTML diganti label di canvas. |
+| `src/timeline.js` | Waktu digeser 4 dtk (`END` 44, `T_CONTACT` 12, `T_SIGNAL` 27); teks judul dan penutup. |
+| `src/army.js` | Keyframe digeser 4 dtk; `Regiment` menyimpan `vx`/`vz` untuk menyebar debu dan jejak di sepanjang lintasan. |
+| `src/dust.js`, `src/terrain.js` | `clear()` dan `reset()` untuk render deterministik. |
+| `src/post.js` | Blur tilt-shift diskalakan dengan resolusi, agar 4K terlihat sama dengan pratinjau. |
+
+### Verifikasi
+
+Diuji di Chromium headless (SwiftShader). Codec yang tersedia: H.264, VP9, VP8.
+
+| Uji | Hasil |
+|---|---|
+| Ekspor penuh 16:9 dan 9:16 (480×270 / 270×480, 8 fps, 4×) | MP4 H.264 valid, 104 frame, 13 dtk; didekode ulang dengan PyAV |
+| Resolusi sebenarnya | 1920×1080, 1080×1920, dan 3840×2160 ter-encode dan terdekode benar |
+| Determinisme | Dua ekspor terpisah: 40 frame identik per piksel (selisih maksimum 0) |
+| Konsol | Tanpa error atau peringatan |
+
+Bug yang ditemukan dan diperbaiki selama pengujian:
+
+| Bug | Perbaikan |
+|---|---|
+| Partikel debu tampil sebagai bulatan hitam: umur melewati batas dalam satu langkah, `pow(1−k, 1,5)` menjadi NaN. Juga bisa muncul sesekali di pratinjau biasa. | `k` dibatasi maksimum 1. |
+| Debu dan jejak bergaris-garis pada langkah waktu besar | Disebar di sepanjang lintasan gerak selama satu langkah. |
+| Pada 9:16 pasukan tergeser ke kanan dan satu bukit terpotong | Sudut, titik tengah, dan zoom tersendiri untuk 9:16. |
+| Ekspor tepat setelah ganti format menghadap ke arah salah | Orientasi kamera diperbarui saat ganti format dan di awal ekspor. |
+
+### Batasan tambahan
+
+- **Browser:** memerlukan WebCodecs; diuji di Chromium, disarankan Chrome/Edge terbaru.
+- **Memori:** seluruh video ditampung di RAM sebelum diunduh. 4K60 pada 0,5× (±90 dtk) bisa mencapai ±700 MB.
+- **Waktu render** bergantung pada GPU dan belum diukur di perangkat nyata.
+- **Ukuran partikel debu** di 4K bisa melampaui batas `gl_PointSize` pada sebagian GPU, sehingga debu tampak lebih kecil.
+
+## 10. Tahap 3 · Kamera sinematik
+
+Kamera kini bergerak menurut **daftar shot** (`CAMERA` di `src/timeline.js`), aktif secara bawaan lewat centang **Kamera sinematik**. Jika dimatikan, kamera kembali manual seperti tahap 2.
+
+### Cara kerja
+
+- Tiap key berisi waktu `t`, titik fokus (`at: [x, z]` tetap, atau `follow: 'khalid' | 'cavL' | 'cavR' | 'persC'` yang mengikuti unit), `yaw` dalam derajat, dan `width`, yaitu lebar pandang dalam satuan dunia. Di antara dua key ada transisi halus (smoothstep).
+- Lebar pandang dipetakan ke lebar bingkai video, sehingga framing sama di pratinjau dan ekspor pada resolusi berapa pun.
+- Untuk 9:16, yaw otomatis +47° dan lebar ×0,6, kecuali diganti lewat `v: { at, yaw, width }`.
+- **Guncangan** (`SHAKES`): saat kontak infanteri (`t = 12`) dan saat kavaleri menghantam (`t = 35`). Dibuat dari jumlah sinus, sehingga tetap deterministik.
+- Kamera adalah fungsi waktu dan posisi unit, sehingga seek, pratinjau, dan ekspor selalu sama.
+
+### Urutan shot Walaja
+
+| Waktu | Shot |
+|---|---|
+| 0–5 | Pembukaan lebar, perlahan mendekat (kartu judul) |
+| 5–8,5 | Menyorot massa infanteri Sassanid |
+| 8,5–11,5 | Garis benturan; guncangan saat kontak |
+| 11,5–19,5 | Close-up Khalid memimpin mundur perlahan, kamera berputar pelan |
+| 19,5–23,5 | Menjauh untuk memperlihatkan garis "U" |
+| 23,5–27,6 | Kavaleri kanan menunggu di balik bukit; sinyal |
+| 27,6–34 | Mengikuti serbuan kavaleri; guncangan saat menghantam |
+| 34–44 | Kantong tertutup, lalu kamera menjauh (kartu penutup) |
+
+### Verifikasi
+
+Ekspor 640×360 dan 360×640 (4 fps, 2×, 96 frame) berupa MP4 H.264 valid. Frame pada sembilan momen kunci diperiksa secara visual di kedua format: subjek tiap shot berada dalam bingkai. Tidak ada error konsol.

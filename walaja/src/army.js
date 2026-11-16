@@ -76,7 +76,7 @@ export class Regiment {
     mesh.userData.used += slots.length;
     this.wx = new Float32Array(slots.length);
     this.wz = new Float32Array(slots.length);
-    this.state = { ...track(0), speed: 0 };
+    this.state = { ...track(0), vx: 0, vz: 0, speed: 0 };
 
     const c = new THREE.Color();
     slots.forEach((s, i) => {
@@ -100,13 +100,16 @@ export class Regiment {
 
   update(t, now, play) {
     const s = this.track(t);
-    let speed = 0;
+    let vx = 0;
+    let vz = 0;
     if (play) {
       const a = this.track(t - 0.1);
       const b = this.track(t + 0.1);
-      speed = Math.hypot(b.x - a.x, b.z - a.z) / 0.2;
+      vx = (b.x - a.x) / 0.2;
+      vz = (b.z - a.z) / 0.2;
     }
-    this.state = { ...s, speed };
+    const speed = Math.hypot(vx, vz);
+    this.state = { ...s, vx, vz, speed };
     const c = Math.cos(s.psi);
     const sn = Math.sin(s.psi);
     const sf = Math.min(speed / this.refSpeed, 1.6);
@@ -198,21 +201,21 @@ export function buildArmies(scene) {
     name: 'Infanteri berat Sassanid (tengah)',
     mesh: meshes.persianInf,
     ...pc,
-    track: keyTrack([[0, 0, -26, 0], [2, 0, -26, 0], [8, 0, 0, 0], [23, 0, 18, 0], [26, 0, 18, 0], [38, 0, 8, 0]]),
+    track: keyTrack([[0, 0, -26, 0], [6, 0, -26, 0], [12, 0, 0, 0], [27, 0, 18, 0], [30, 0, 18, 0], [42, 0, 8, 0]]),
   }));
   const pl = persianGrid();
   const persL = add(new Regiment({
     name: 'Sayap kiri Sassanid',
     mesh: meshes.persianInf,
     ...pl,
-    track: keyTrack([[0, -43, -26, 0], [2, -43, -26, 0], [8, -43, 0, 0], [23, -44, 7, 0.3], [26, -44, 7, 0.3], [38, -42, 1, 0.4]]),
+    track: keyTrack([[0, -43, -26, 0], [6, -43, -26, 0], [12, -43, 0, 0], [27, -44, 7, 0.3], [30, -44, 7, 0.3], [42, -42, 1, 0.4]]),
   }));
   const pr = persianGrid();
   const persR = add(new Regiment({
     name: 'Sayap kanan Sassanid',
     mesh: meshes.persianInf,
     ...pr,
-    track: keyTrack([[0, 43, -26, 0], [2, 43, -26, 0], [8, 43, 0, 0], [23, 44, 7, -0.3], [26, 44, 7, -0.3], [38, 42, 1, -0.4]]),
+    track: keyTrack([[0, 43, -26, 0], [6, 43, -26, 0], [12, 43, 0, 0], [27, 44, 7, -0.3], [30, 44, 7, -0.3], [42, 42, 1, -0.4]]),
   }));
 
   // ── Kataprak (kavaleri berat) mengikuti di belakang.
@@ -225,7 +228,7 @@ export function buildArmies(scene) {
       gait: 'horse',
       refSpeed: 3,
       track: keyTrack([
-        [0, sign * 36, -52, 0], [2, sign * 36, -52, 0], [8, sign * 34, -28, 0], [23, sign * 34, -17, 0], [26, sign * 34, -17, 0], [38, sign * 34, -21, 0],
+        [0, sign * 36, -52, 0], [6, sign * 36, -52, 0], [12, sign * 34, -28, 0], [27, sign * 34, -17, 0], [30, sign * 34, -17, 0], [42, sign * 34, -21, 0],
       ]),
     }));
   };
@@ -246,7 +249,7 @@ export function buildArmies(scene) {
     halfW: 0,
     gait: 'horse',
     refSpeed: 3,
-    track: keyTrack([[0, 0, -66, 0], [2, 0, -66, 0], [8, 0, -42, 0], [23, 0, -26, 0], [26, 0, -26, 0], [38, 0, -30, 0]]),
+    track: keyTrack([[0, 0, -66, 0], [6, 0, -66, 0], [12, 0, -42, 0], [27, 0, -26, 0], [30, 0, -26, 0], [42, 0, -30, 0]]),
   }));
   meshes.persianCav.setColorAt(guard.start, new THREE.Color(1.25, 1.1, 0.7));
   meshes.persianCav.instanceColor.needsUpdate = true;
@@ -261,7 +264,7 @@ export function buildArmies(scene) {
     mesh: meshes.muslimInf,
     ...mg,
     track: keyTrack([
-      [0, 0, 16, PI, 5], [8, 0, 16, PI, 5], [22, 0, 25, PI, -9], [26, 0, 25, PI, -9], [38, 0, 19, PI, -2],
+      [0, 0, 16, PI, 5], [12, 0, 16, PI, 5], [26, 0, 25, PI, -9], [30, 0, 25, PI, -9], [42, 0, 19, PI, -2],
     ]),
   }));
 
@@ -319,5 +322,13 @@ export function buildArmies(scene) {
     { text: 'Kavaleri ringan · tersembunyi', side: 'blue', phase: 'hidden', get: () => cavL.anchor(0, 0, 6.8) },
   );
 
-  return { regiments, banners, labels, meshes, cavalry: [cavL, cavR], infantry: { muslimInf, persC, persL, persR }, catL, catR };
+  // Titik fokus yang bisa diikuti kamera sinematik (lihat CAMERA di timeline.js).
+  const focus = {
+    khalid: () => muslimInf.place(0, frontLz + 2.6),
+    cavL: () => ({ x: cavL.state.x, z: cavL.state.z }),
+    cavR: () => ({ x: cavR.state.x, z: cavR.state.z }),
+    persC: () => ({ x: persC.state.x, z: persC.state.z }),
+  };
+
+  return { regiments, banners, labels, meshes, focus, cavalry: [cavL, cavR], infantry: { muslimInf, persC, persL, persR }, catL, catR };
 }
