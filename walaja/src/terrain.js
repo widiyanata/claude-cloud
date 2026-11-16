@@ -77,7 +77,14 @@ function sandTexture() {
 export function createTrample(base) {
   let dirty = false;
   const { ctx, tex, size } = base;
+  const pristine = ctx.getImageData(0, 0, size, size);
   return {
+    // Kembalikan tanah ke kondisi awal (tanpa jejak), mis. sebelum merender video.
+    reset() {
+      ctx.putImageData(pristine, 0, 0);
+      tex.needsUpdate = true;
+      dirty = false;
+    },
     stamp(x, z, r = 0.7, alpha = 0.1) {
       const px = (x / WORLD.w + 0.5) * size;
       const py = (z / WORLD.d + 0.5) * size;

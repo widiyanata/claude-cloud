@@ -59,6 +59,11 @@ export class DustSystem {
     this.points.renderOrder = 5;
   }
 
+  clear() {
+    this.age.fill(Infinity);
+    this.cursor = 0;
+  }
+
   emit(x, y, z, vx, vy, vz, s0, s1, a, life) {
     const i = this.cursor;
     this.cursor = (this.cursor + 1) % this.max;
@@ -86,7 +91,7 @@ export class DustSystem {
         continue;
       }
       this.age[i] += dt;
-      const k = this.age[i] / life;
+      const k = Math.min(1, this.age[i] / life);
       this.pos[i * 3] += this.vel[i * 3] * dt;
       this.pos[i * 3 + 1] += this.vel[i * 3 + 1] * dt;
       this.pos[i * 3 + 2] += this.vel[i * 3 + 2] * dt;

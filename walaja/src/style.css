@@ -94,19 +94,9 @@ body {
 }
 
 .phase {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-height: 46px;
-}
-.phase strong {
+  display: block;
   font-family: Georgia, serif;
   font-size: 15px;
-}
-.phase span {
-  font-size: 12.5px;
-  line-height: 1.4;
-  opacity: 0.85;
 }
 
 .timeline {
@@ -178,46 +168,33 @@ button.primary {
 button.primary:hover {
   background: #54401f;
 }
+select {
+  font: inherit;
+  font-size: 13px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  border: 1px solid var(--edge);
+  background: #fbf3dd;
+  color: var(--ink);
+}
 button:focus-visible,
+select:focus-visible,
 input:focus-visible {
   outline: 2px solid var(--gold);
   outline-offset: 2px;
 }
 
+.row.video {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--edge);
+}
 .hint {
-  margin-left: auto;
+  margin: 8px 0 0;
   font-size: 11px;
   opacity: 0.6;
 }
 
-#labels {
-  position: fixed;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-  overflow: hidden;
-}
-.tag {
-  position: absolute;
-  transform: translate(-50%, -100%);
-  padding: 2px 8px;
-  font-size: 11px;
-  font-weight: 600;
-  white-space: nowrap;
-  color: #fff;
-  border-radius: 999px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
-  transition: opacity 0.4s;
-}
-.tag.blue {
-  background: var(--blue);
-}
-.tag.red {
-  background: var(--red);
-}
-.tag.hide {
-  opacity: 0;
-}
 
 @media (max-width: 560px) {
   .legend {
@@ -233,24 +210,57 @@ input:focus-visible {
   }
 }
 
-#signal {
+
+#overlay {
   position: fixed;
-  z-index: 3;
-  top: 84px;
-  left: 50%;
-  transform: translate(-50%, -8px);
-  padding: 8px 18px;
-  border-radius: 999px;
-  background: var(--ink);
-  color: #f7edd4;
-  font-family: Georgia, serif;
-  font-size: 15px;
-  letter-spacing: 0.02em;
-  opacity: 0;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
   pointer-events: none;
-  transition: opacity 0.35s, transform 0.35s;
 }
-#signal.on {
-  opacity: 1;
-  transform: translate(-50%, 0);
+
+body.clean .ui {
+  display: none;
+}
+
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: grid;
+  place-items: center;
+  background: rgba(30, 20, 10, 0.55);
+}
+.modal[hidden] {
+  display: none;
+}
+.modal-box {
+  width: min(420px, calc(100vw - 32px));
+  padding: 18px 20px;
+  border-radius: 12px;
+  background: var(--panel);
+  border: 1px solid var(--edge);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 13px;
+}
+.modal-box strong {
+  font-family: Georgia, serif;
+  font-size: 16px;
+}
+.modal-box button {
+  align-self: flex-end;
+}
+.progress {
+  height: 8px;
+  border-radius: 4px;
+  background: rgba(59, 42, 23, 0.16);
+  overflow: hidden;
+}
+#export-bar {
+  height: 100%;
+  width: 0;
+  background: var(--gold);
 }

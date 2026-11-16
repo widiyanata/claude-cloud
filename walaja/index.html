@@ -3,30 +3,25 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Walaja 633 M · Prototipe Visual</title>
+    <title>Walaja 633 M · Simulasi Video</title>
     <link rel="stylesheet" href="/src/style.css" />
   </head>
   <body>
     <canvas id="stage"></canvas>
-    <div id="labels"></div>
+    <canvas id="overlay"></canvas>
 
-    <header class="title">
+    <header class="title ui">
       <h1>Pertempuran Walaja</h1>
-      <p>633 M · prototipe visual</p>
+      <p>633 M · simulasi untuk video</p>
     </header>
 
-    <aside class="legend">
+    <aside class="legend ui">
       <span><i class="dot blue"></i>Kekhalifahan Rasyidin</span>
       <span><i class="dot red"></i>Kekaisaran Sassanid</span>
     </aside>
 
-    <div id="signal">Sinyal terompet: kavaleri menyerbu</div>
-
-    <section class="panel">
-      <div class="phase">
-        <strong id="phase-name"></strong>
-        <span id="phase-text"></span>
-      </div>
+    <section class="panel ui">
+      <strong id="phase-name" class="phase"></strong>
       <div class="timeline" id="timeline">
         <div class="seg" data-i="0"></div>
         <div class="seg" data-i="1"></div>
@@ -39,9 +34,38 @@
         <button id="btn-reset">Ulang</button>
         <label><input type="checkbox" id="chk-labels" checked /> Label</label>
         <label><input type="checkbox" id="chk-tilt" checked /> Tilt-shift</label>
-        <span class="hint">Seret: geser · Klik kanan / Q E: putar · Roda: zoom</span>
+        <button id="btn-clean" title="Sembunyikan UI (H)">Sembunyikan UI</button>
       </div>
+      <div class="row video">
+        <select id="sel-format" aria-label="Format video">
+          <option value="16:9">16:9 · YouTube</option>
+          <option value="9:16">9:16 · Shorts/TikTok</option>
+        </select>
+        <select id="sel-quality" aria-label="Resolusi">
+          <option value="1080">1080p</option>
+          <option value="2160">4K</option>
+        </select>
+        <select id="sel-fps" aria-label="Frame per detik">
+          <option value="30">30 fps</option>
+          <option value="60" selected>60 fps</option>
+        </select>
+        <select id="sel-speed" aria-label="Kecepatan">
+          <option value="1">1× · ±46 dtk</option>
+          <option value="0.5">0,5× · ±90 dtk</option>
+        </select>
+        <button id="btn-export" class="primary">Ekspor video</button>
+      </div>
+      <p class="hint">Seret: geser · Klik kanan / Q E: putar · Roda: zoom · H: sembunyikan UI</p>
     </section>
+
+    <div id="export-modal" class="modal" hidden>
+      <div class="modal-box">
+        <strong>Merender video</strong>
+        <div class="progress"><div id="export-bar"></div></div>
+        <span id="export-status">Menyiapkan…</span>
+        <button id="btn-cancel">Batal</button>
+      </div>
+    </div>
 
     <script type="module" src="/src/main.js"></script>
   </body>
